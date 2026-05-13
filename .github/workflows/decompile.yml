@@ -17,23 +17,24 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
       
-      - name: Create directory structure
+      - name: Download Bukkit/Spigot API
+        run: |
+          # Tải Paper API (thay thế cho Spigot)
+          wget -O paper-api.jar https://api.papermc.io/v2/projects/paper/versions/1.20.4/builds/418/downloads/paper-1.20.4-418-api.jar
+          # Hoặc dùng Spigot API
+          wget -O spigot-api.jar https://hub.spigotmc.org/nexus/content/repositories/snapshots/org/spigotmc/spigot-api/1.20.4-R0.1-SNAPSHOT/spigot-api-1.20.4-R0.1-20231115.030351-43.jar || true
+      
+      - name: Create directory and compile
         run: |
           # Tạo đúng cấu trúc package
           mkdir -p me/gerhart/antivpn/license
-          # Copy file License.java từ thư mục gốc vào đúng package
-          cp License.java me/gerhart/antivpn/license/ || echo "License.java not in root, searching..."
-          # Nếu file ở chỗ khác, tìm nó
-          find . -name "License.java" -exec cp {} me/gerhart/antivpn/license/ \;
-      
-      - name: Compile License.java
-        run: |
-          cd me/gerhart/antivpn/license
-          # Compile file
-          javac License.java 2>&1
-          echo "=== Compiled ==="
-          ls -la License.class
-          cd ../..
+          cp License.java me/gerhart/antivpn/license/
+          
+          # Compile với classpath
+          javac -cp ".:paper-api.jar:spigot-api.jar" me/gerhart/antivpn/license/License.java 2>&1 || true
+          
+          # Kiểm tra file đã được tạo chưa
+          find . -name "*.class" -ls
       
       - name: Upload License.class
         uses: actions/upload-artifact@v4
