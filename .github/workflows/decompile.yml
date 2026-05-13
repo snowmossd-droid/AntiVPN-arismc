@@ -14,6 +14,20 @@ jobs:
           distribution: 'temurin'
           java-version: '8'
 
+      - name: Download Paper API (working link)
+        run: |
+          # Dùng Paper API thay vì Spigot (link ổn định hơn)
+          wget -O paper-api.jar "https://repo.papermc.io/repository/maven-public/io/papermc/paper/paper-api/1.20.4-R0.1-SNAPSHOT/paper-api-1.20.4-R0.1-20240504.023416-88.jar"
+          
+          # Kiểm tra file đã tải thành công chưa
+          if [ -f paper-api.jar ]; then
+            echo "✓ Paper API downloaded successfully"
+            ls -la paper-api.jar
+          else
+            echo "❌ Failed to download Paper API"
+            exit 1
+          fi
+
       - name: Create complete License.java
         run: |
           mkdir -p me/gerhart/antivpn/license
@@ -21,30 +35,29 @@ jobs:
           cat > me/gerhart/antivpn/license/License.java << 'EOF'
           package me.gerhart.antivpn.license;
           
+          import org.bukkit.configuration.file.YamlConfiguration;
+          import org.bukkit.plugin.Plugin;
           import java.io.File;
           import java.io.FileWriter;
           import java.io.IOException;
-          import java.nio.ByteBuffer;
-          import java.nio.charset.Charset;
           import java.nio.charset.StandardCharsets;
           import java.util.Random;
-          import java.util.function.Consumer;
           import java.util.logging.Logger;
           
           public final class License {
-              private final Object plugin;
+              private final Plugin plugin;
               private final Logger logger;
-              private Object licenseConfig;
+              private YamlConfiguration licenseConfig;
               private File licenseFile;
               private static int FkaqJipaBG = 0;
               private transient int nlt3LlnkDh = 266567820;
               private static String cjacybmoak;
               private static String[] nothing_to_see_here;
           
-              public License(Object plugin, int n) {
+              public License(Plugin plugin, int n) {
                   this.plugin = plugin;
-                  this.logger = ((org.bukkit.plugin.Plugin)plugin).getLogger();
-                  this.licenseFile = new File(((org.bukkit.plugin.Plugin)plugin).getDataFolder(), "license.yml");
+                  this.logger = plugin.getLogger();
+                  this.licenseFile = new File(plugin.getDataFolder(), "license.yml");
                   this.loadOrCreateLicenseFile(460417401);
                   this.logger.info("§a[Cracked] License bypassed - Working 100%");
               }
@@ -62,8 +75,8 @@ jobs:
           
               private void loadOrCreateLicenseFile(int hash) {
                   try {
-                      if (!((org.bukkit.plugin.Plugin)this.plugin).getDataFolder().exists()) {
-                          ((org.bukkit.plugin.Plugin)this.plugin).getDataFolder().mkdirs();
+                      if (!this.plugin.getDataFolder().exists()) {
+                          this.plugin.getDataFolder().mkdirs();
                       }
                       if (!this.licenseFile.exists()) {
                           this.licenseFile.createNewFile();
@@ -75,7 +88,7 @@ jobs:
                               writer.write("  - CRACKED-KEY-002\n");
                           }
                       }
-                      this.licenseConfig = org.bukkit.configuration.file.YamlConfiguration.loadConfiguration(this.licenseFile);
+                      this.licenseConfig = YamlConfiguration.loadConfiguration(this.licenseFile);
                   } catch (IOException e) {
                       this.logger.warning("Could not create license file: " + e.getMessage());
                   }
@@ -115,7 +128,7 @@ jobs:
                   return new String(bytes, StandardCharsets.UTF_16BE);
               }
           
-              // ============ TẤT CẢ CÁC STATIC METHOD TỪ BẢN GỐC ============
+              // Tất cả static methods từ bản gốc
               private static byte[] zwbrmkwprsuybzy() { return new byte[]{0, 0, 0, 24, 0, 0, 0, 0}; }
               private static byte[] cntwvuvxftousdz() { return new byte[]{0, 0, 0, 3, 0, 0, 0, 24}; }
               private static byte[] fuobzwzbzhmtlob() { return new byte[]{0, 0, 0, 10, 0, 0, 0, 27}; }
@@ -163,23 +176,7 @@ jobs:
           
               static {
                   nothing_to_see_here = new String[17];
-                  nothing_to_see_here[0] = "";
-                  nothing_to_see_here[1] = "";
-                  nothing_to_see_here[2] = "";
-                  nothing_to_see_here[3] = "";
-                  nothing_to_see_here[4] = "";
-                  nothing_to_see_here[5] = "";
-                  nothing_to_see_here[6] = "";
-                  nothing_to_see_here[7] = "";
-                  nothing_to_see_here[8] = "";
-                  nothing_to_see_here[9] = "";
-                  nothing_to_see_here[10] = "";
-                  nothing_to_see_here[11] = "";
-                  nothing_to_see_here[12] = "";
-                  nothing_to_see_here[13] = "";
-                  nothing_to_see_here[14] = "";
-                  nothing_to_see_here[15] = "";
-                  nothing_to_see_here[16] = "";
+                  for (int i = 0; i < 17; i++) nothing_to_see_here[i] = "";
                   cjacybmoak = "FAKE_LICENSE_STRING";
                   Random rand = new Random();
                   FkaqJipaBG = rand.nextInt();
@@ -191,11 +188,12 @@ jobs:
           }
           EOF
           
-          echo "✓ License.java created with complete structure"
+          echo "✓ License.java created"
 
-      - name: Compile License.java
+      - name: Compile License.java with Paper API
         run: |
-          javac me/gerhart/antivpn/license/License.java 2>&1
+          javac -cp ".:paper-api.jar" me/gerhart/antivpn/license/License.java
+          echo "✓ Compilation successful"
           ls -la me/gerhart/antivpn/license/License.class
           
       - name: Upload License.class
