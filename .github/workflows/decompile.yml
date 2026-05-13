@@ -1,4 +1,4 @@
-name: Build License Class
+name: Build License Class (No Dependency)
 
 on:
   workflow_dispatch:
@@ -6,32 +6,139 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '8'
-      
-      - name: Download Spigot API
+          java-version: '8' # Dùng Java 8 để tương thích cao nhất
+
+      - name: Create License.java (No external dependencies)
         run: |
-          wget -O spigot-api.jar "https://hub.spigotmc.org/nexus/content/repositories/snapshots/org/spigotmc/spigot-api/1.20.4-R0.1-SNAPSHOT/spigot-api-1.20.4-R0.1-20231115.030351-43.jar"
-      
-      - name: Create License.java
-        run: |
+          # Tạo đúng cấu trúc thư mục cho package
           mkdir -p me/gerhart/antivpn/license
+
+          # Tạo file License.java với nội dung đã qua xử lý
           cat > me/gerhart/antivpn/license/License.java << 'EOF'
-          // PASTE TOÀN BỘ CODE TRÊN VÀO ĐÂY
+          package me.gerhart.antivpn.license;
+
+          // Chỉ import các thư viện chuẩn của Java, không cần Bukkit/Spigot
+          import java.io.File;
+          import java.util.logging.Logger;
+          import java.lang.reflect.Method;
+
+          public final class License {
+              private Object plugin; // Lưu trữ plugin dưới dạng Object để tránh dependency
+              private Logger logger;
+
+              // Constructor - Chữ ký (Plugin, int) vẫn được giữ nguyên
+              public License(Object plugin, int n) {
+                  this.plugin = plugin;
+                  try {
+                      // Dùng Reflection để gọi method plugin.getLogger()
+                      Method getLoggerMethod = plugin.getClass().getMethod("getLogger");
+                      this.logger = (Logger) getLoggerMethod.invoke(plugin);
+                      this.logger.info("§a[Cracked] License system initialized. Bypass active.");
+                  } catch (Exception e) {
+                      System.err.println("[License] Failed to initialize logger: " + e.getMessage());
+                  }
+              }
+
+              // ============ CÁC METHOD CHÍNH ============
+              // Luôn trả về true để bypass license
+              public boolean validateLicense(int var1_1) {
+                  if (this.logger != null) {
+                      this.logger.info("§a[License] Validation check: §aSUCCESS (bypassed)");
+                  }
+                  return true;
+              }
+
+              // Chạy callback ngay lập tức
+              public void validateLicenseAsync(Runnable callback) {
+                  if (callback != null) {
+                      callback.run();
+                  }
+              }
+
+              // Các method log giả, in ra thông báo đẹp
+              public void logLicenseSuccess(String a, String b, String c, String d, String e, String f, String g, int h) {
+                  if (this.logger != null) {
+                      this.logger.info("§a=========================================");
+                      this.logger.info("§a[License] §fStatus: §aVALID (Bypassed)");
+                      this.logger.info("§a[License] §fPlugin: §e" + b);
+                      this.logger.info("§a[License] §fVersion: §e" + c);
+                      this.logger.info("§a=========================================");
+                  }
+              }
+
+              public void logLicenseError(String error, int code) {
+                  // Bỏ qua lỗi license
+                  if (this.logger != null && error != null && !error.isEmpty()) {
+                      this.logger.warning("§c[License] Error (ignored): " + error);
+                  }
+              }
+
+              // Các method private giữ đúng tên nhưng bỏ qua logic hoặc trả về giá trị giả
+              private void loadOrCreateLicenseFile(int hash) {
+                  // Không làm gì cả
+              }
+              private String getFirstLocalKey(int n) { return "CRACKED-KEY-BYPASS"; }
+              private String fetchPublicIP(int n) { return "127.0.0.1"; }
+              private String toAnsi(String s, int n) { return s; }
+              private String buildBar(int n) { return "========================================="; }
+              private boolean isFolia(int n) { return false; }
+              public static String tvbrokkrya(byte[] b, int n) { return new String(b); }
+              
+              // Các static method giả để giữ cấu trúc class
+              private static byte[] zwbrmkwprsuybzy() { return new byte[]{0,0,0,24}; }
+              private static byte[] cntwvuvxftousdz() { return new byte[]{0,0,0,3,0,0,0,24}; }
+              private static byte[] fuobzwzbzhmtlob() { return new byte[]{0,0,0,10}; }
+              private static byte[] eqdjfyzzlzfoxcb() { return new byte[]{0,0,0,44}; }
+              private static byte[] ztofcyqcdcobdid() { return new byte[]{0,0,0,21}; }
+              // Thêm các byte array giả khác nếu cần, có thể khai báo nhưng không dùng
+              private static byte[] gzdgeyahuqjtkss() { return new byte[]{0}; }
+              private static byte[] rzqjfxyckerjbul() { return new byte[]{0}; }
+              private static byte[] ypswfjdmpgkoity() { return new byte[]{0}; }
+              private static byte[] bqezsffrrjxdhkr() { return new byte[]{0}; }
+              // ... Kết thúc các method giả
+
+              static {
+                  // Khởi tạo giá trị tĩnh giả
+                  nothing_to_see_here = new String[17];
+                  for (int i = 0; i < 17; i++) nothing_to_see_here[i] = "";
+                  cjacybmoak = "FAKE_STRING";
+              }
+
+              // Các field tĩnh (static fields) giữ đúng tên để tránh lỗi
+              private static int FkaqJipaBG = 0;
+              private static String cjacybmoak;
+              private static String[] nothing_to_see_here;
+              private transient int nlt3LlnkDh = 266567820;
+              private static int eznkswutelizrsfy(int n, int n2) { return n ^ n2; }
+          }
           EOF
-      
-      - name: Compile
+
+          echo "✓ File License.java đã được tạo thành công."
+
+      - name: Compile License.java
         run: |
-          javac -cp ".:spigot-api.jar" me/gerhart/antivpn/license/License.java
-          ls -la me/gerhart/antivpn/license/
-      
-      - name: Upload
+          # Biên dịch file. Lệnh javac sẽ tự tìm các class cần thiết trong JDK.
+          echo "Đang biên dịch..."
+          javac me/gerhart/antivpn/license/License.java
+
+          # Kiểm tra xem file .class đã được tạo chưa
+          if [ -f "me/gerhart/antivpn/license/License.class" ]; then
+            echo "✓ Biên dịch thành công! File License.class đã được tạo."
+            ls -la me/gerhart/antivpn/license/
+          else
+            echo "❌ Biên dịch thất bại. Không tìm thấy file License.class."
+            exit 1
+          fi
+
+      - name: Upload License.class
         uses: actions/upload-artifact@v4
         with:
-          name: license-class
+          name: license-class-bypass
           path: me/gerhart/antivpn/license/License.class
+          retention-days: 90
