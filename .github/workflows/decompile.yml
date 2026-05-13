@@ -12,96 +12,26 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '8'
       
-      - name: Create License.java (no dependencies)
+      - name: Download Spigot API
+        run: |
+          wget -O spigot-api.jar "https://hub.spigotmc.org/nexus/content/repositories/snapshots/org/spigotmc/spigot-api/1.20.4-R0.1-SNAPSHOT/spigot-api-1.20.4-R0.1-20231115.030351-43.jar"
+      
+      - name: Create License.java
         run: |
           mkdir -p me/gerhart/antivpn/license
-          
           cat > me/gerhart/antivpn/license/License.java << 'EOF'
-          package me.gerhart.antivpn.license;
-          
-          public final class License {
-              private Object plugin;
-              private Object logger;
-              
-              public License(Object plugin, int n) {
-                  this.plugin = plugin;
-                  try {
-                      java.lang.reflect.Method getLogger = plugin.getClass().getMethod("getLogger");
-                      this.logger = getLogger.invoke(plugin);
-                      java.lang.reflect.Method info = this.logger.getClass().getMethod("info", String.class);
-                      info.invoke(this.logger, "§a=========================================");
-                      info.invoke(this.logger, "§a[Cracked] License bypassed - Working 100%");
-                      info.invoke(this.logger, "§a=========================================");
-                  } catch (Exception e) {}
-              }
-              
-              public boolean validateLicense(int n) {
-                  try {
-                      if (this.logger != null) {
-                          java.lang.reflect.Method info = this.logger.getClass().getMethod("info", String.class);
-                          info.invoke(this.logger, "§a[License] Validation: §aSUCCESS (bypassed)");
-                      }
-                  } catch (Exception e) {}
-                  return true;
-              }
-              
-              public void validateLicenseAsync(Runnable r) {
-                  if (r != null) r.run();
-              }
-              
-              public void logLicenseSuccess(String a, String b, String c, String d, String e, String f, String g, int h) {
-                  try {
-                      if (this.logger != null) {
-                          java.lang.reflect.Method info = this.logger.getClass().getMethod("info", String.class);
-                          info.invoke(this.logger, "§a=========================================");
-                          info.invoke(this.logger, "§a[License] §fLicense: §aVALID");
-                          info.invoke(this.logger, "§a[License] §fPlugin: §e" + b);
-                          info.invoke(this.logger, "§a[License] §fVersion: §e" + c);
-                          info.invoke(this.logger, "§a=========================================");
-                      }
-                  } catch (Exception ex) {}
-              }
-              
-              public void logLicenseError(String a, int b) {}
-              
-              private void loadOrCreateLicenseFile(int hash) {}
-              private String getFirstLocalKey(int n) { return "CRACKED-KEY-001"; }
-              private String fetchPublicIP(int n) { return "127.0.0.1"; }
-              private String toAnsi(String s, int n) { return s; }
-              private String buildBar(int n) { return "========================================="; }
-              private boolean isFolia(int n) { return false; }
-              public static String tvbrokkrya(byte[] b, int n) { return new String(b); }
-          }
+          // PASTE TOÀN BỘ CODE TRÊN VÀO ĐÂY
           EOF
-          
-          echo "=== License.java created ==="
-          cat me/gerhart/antivpn/license/License.java
       
-      - name: Compile License.java
+      - name: Compile
         run: |
-          cd me/gerhart/antivpn/license
-          javac License.java
-          echo "=== Compilation success ==="
-          ls -la License.class
-          cd ../..
+          javac -cp ".:spigot-api.jar" me/gerhart/antivpn/license/License.java
+          ls -la me/gerhart/antivpn/license/
       
-      - name: Upload License.class
+      - name: Upload
         uses: actions/upload-artifact@v4
         with:
           name: license-class
           path: me/gerhart/antivpn/license/License.class
-          retention-days: 90
-      
-      - name: Create standalone JAR
-        run: |
-          jar cf license-bypass.jar me/gerhart/antivpn/license/License.class
-          ls -la license-bypass.jar
-      
-      - name: Upload JAR
-        uses: actions/upload-artifact@v4
-        with:
-          name: license-bypass-jar
-          path: license-bypass.jar
-          retention-days: 90
