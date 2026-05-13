@@ -6,51 +6,176 @@ on:
 jobs:
   compile:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '21'
-      
-      - name: Download Paper API 1.21
+
+      - name: Download Paper API 1.21 using Maven
         run: |
-          # Tải Paper API 1.21 (phiên bản 1.21, không phải 1.21.3)
-          wget -O paper-api.jar "https://repo.papermc.io/repository/maven-public/io/papermc/paper/paper-api/1.21-R0.1-SNAPSHOT/paper-api-1.21-R0.1-20240619.115036-86.jar"
+          # Tạo một pom.xml tạm thời để tải Paper API
+          cat > pom.xml << 'EOF'
+          <project>
+            <modelVersion>4.0.0</modelVersion>
+            <groupId>temp</groupId>
+            <artifactId>temp</artifactId>
+            <version>1.0</version>
+            <repositories>
+              <repository>
+                <id>papermc</id>
+                <url>https://repo.papermc.io/repository/maven-public/</url>
+              </repository>
+            </repositories>
+            <dependencies>
+              <dependency>
+                <groupId>io.papermc.paper</groupId>
+                <artifactId>paper-api</artifactId>
+                <version>1.21-R0.1-SNAPSHOT</version>
+                <scope>system</scope>
+                <systemPath>${project.basedir}/paper-api.jar</systemPath>
+              </dependency>
+            </dependencies>
+          </project>
+          EOF
           
-          # Nếu link trên lỗi, thử link này
-          if [ ! -f paper-api.jar ]; then
-            wget -O paper-api.jar "https://repo.papermc.io/repository/maven-public/io/papermc/paper/paper-api/1.21-R0.1-SNAPSHOT/paper-api-1.21-R0.1-20240613.200822-79.jar"
+          # Dùng Maven để tải dependency
+          mvn dependency:copy -Dartifact="io.papermc.paper:paper-api:1.21-R0.1-SNAPSHOT" -DoutputDirectory=.
+          
+          # Đổi tên file đã tải
+          mv paper-api-*.jar paper-api.jar 2>/dev/null || echo "File may have different name"
+          
+          # Kiểm tra xem file đã được tải chưa
+          if [ -f paper-api.jar ]; then
+            echo "✓ Paper API 1.21 downloaded successfully"
+            ls -la paper-api.jar
+          else
+            echo "❌ Failed to download Paper API 1.21"
+            exit 1
           fi
-          
-          # Nếu vẫn lỗi, thử link cuối cùng
-          if [ ! -f paper-api.jar ]; then
-            wget -O paper-api.jar "https://repo.papermc.io/repository/maven-public/io/papermc/paper/paper-api/1.21-R0.1-SNAPSHOT/paper-api-1.21-R0.1-20240608.160007-67.jar"
-          fi
-          
-          ls -la paper-api.jar
-      
-      - name: Create directory structure
+
+      - name: Setup directory and patch License.java
         run: |
           # Tạo đúng cấu trúc package
           mkdir -p me/gerhart/antivpn/license
           
-          # Copy License.java từ thư mục gốc vào đúng package
-          cp License.java me/gerhart/antivpn/license/ 2>/dev/null || echo "License.java not in root"
+          # Sao chép file License.java từ thư mục gốc
+          cp License.java me/gerhart/antivpn/license/ 2>/dev/null || echo "License.java not in root, searching..."
           
-          # Nếu không tìm thấy, tìm trong toàn bộ repo
-          find . -name "License.java" -exec cp {} me/gerhart/antivpn/license/ \;
+          # Tìm file License.java trong toàn bộ repo nếu chưa tìm thấy
+          if [ ! -f "me/gerhart/antivpn/license/License.java" ]; then
+            find . -name "License.java" -exec cp {} me/gerhart/antivpn/license/ \;
+          fi
           
-          echo "=== License.java content ==="
-          cat me/gerhart/antivpn/license/License.java | head -30
-      
+          # Patch file License.java để luôn trả về true
+          cat > me/gerhart/antivpn/license/License.java << 'EOF'
+          package me.gerhart.antivpn.license;
+          
+          import org.bukkit.configuration.file.YamlConfiguration;
+          import org.bukkit.plugin.Plugin;
+          import java.io.File;
+          import java.io.FileWriter;
+          import java.io.IOException;
+          import java.nio.charset.StandardCharsets;
+          import java.util.Random;
+          import java.util.logging.Logger;
+          
+          public final class License {
+              private final Plugin plugin;
+              private final Logger logger;
+              private YamlConfiguration licenseConfig;
+              private File licenseFile;
+              private static int FkaqJipaBG = 0;
+              private transient int nlt3LlnkDh = 266567820;
+              private static String cjacybmoak;
+              private static String[] nothing_to_see_here;
+          
+              public License(Plugin plugin, int n) {
+                  this.plugin = plugin;
+                  this.logger = plugin.getLogger();
+                  this.licenseFile = new File(plugin.getDataFolder(), "license.yml");
+                  this.loadOrCreateLicenseFile(460417401);
+                  this.logger.info("§a[License] Patched version - License bypassed!");
+              }
+          
+              public boolean validateLicense(int var1_1) {
+                  this.logger.info("§a[License] Validation bypassed - always returns true");
+                  return true;
+              }
+          
+              public void validateLicenseAsync(Runnable callback) {
+                  if (callback != null) {
+                      callback.run();
+                  }
+              }
+          
+              private void loadOrCreateLicenseFile(int hash) {
+                  try {
+                      if (!this.plugin.getDataFolder().exists()) {
+                          this.plugin.getDataFolder().mkdirs();
+                      }
+                      if (!this.licenseFile.exists()) {
+                          this.licenseFile.createNewFile();
+                          try (FileWriter writer = new FileWriter(this.licenseFile)) {
+                              writer.write("# Patched license file\n");
+                              writer.write("license-key: PATCHED-BYPASS-100\n");
+                              writer.write("license-keys:\n");
+                              writer.write("  - PATCHED-KEY-001\n");
+                          }
+                      }
+                      this.licenseConfig = YamlConfiguration.loadConfiguration(this.licenseFile);
+                  } catch (IOException e) {
+                      this.logger.warning("Could not create license file: " + e.getMessage());
+                  }
+              }
+          
+              public void logLicenseSuccess(String a, String b, String c, String d, String e, String f, String g, int h) {
+                  this.logger.info("§a=========================================");
+                  this.logger.info("§a[License] License: VALID (Patched)");
+                  this.logger.info("§a[License] Plugin: " + b);
+                  this.logger.info("§a[License] Version: " + c);
+                  this.logger.info("§a=========================================");
+              }
+          
+              public void logLicenseError(String error, int code) {}
+          
+              private String getFirstLocalKey(int n) { return "PATCHED-KEY-001"; }
+              private String fetchPublicIP(int n) { return "127.0.0.1"; }
+              private String toAnsi(String text, int n) { return text; }
+              private String buildBar(int n) { return "========================================="; }
+              private boolean isFolia(int n) { return false; }
+              public static String tvbrokkrya(byte[] bytes, int n) { return new String(bytes, StandardCharsets.UTF_16BE); }
+          
+              // Các static method (giữ nguyên cấu trúc)
+              private static byte[] zwbrmkwprsuybzy() { return new byte[]{0,0,0,24}; }
+              private static byte[] cntwvuvxftousdz() { return new byte[]{0,0,0,3,0,0,0,24}; }
+              private static byte[] fuobzwzbzhmtlob() { return new byte[]{0,0,0,10,0,0,0,27}; }
+              private static byte[] eqdjfyzzlzfoxcb() { return new byte[]{0,0,0,44,0,0,0,37}; }
+              private static byte[] ztofcyqcdcobdid() { return new byte[]{0,0,0,21,0,0,0,81}; }
+              // ... (thêm các static method khác nếu cần)
+          
+              static {
+                  nothing_to_see_here = new String[17];
+                  for (int i = 0; i < 17; i++) nothing_to_see_here[i] = "";
+                  cjacybmoak = "PATCHED_STRING";
+                  Random rand = new Random();
+                  FkaqJipaBG = rand.nextInt();
+              }
+          
+              private static int eznkswutelizrsfy(int n, int n2) { return n ^ n2; }
+          }
+          EOF
+          
+          echo "✓ License.java has been patched"
+
       - name: Compile License.java
         run: |
-          # Biên dịch với Paper API 1.21
+          # Biên dịch với Paper API đã tải
           javac -cp ".:paper-api.jar" me/gerhart/antivpn/license/License.java
           
           # Kiểm tra kết quả
@@ -61,10 +186,10 @@ jobs:
             echo "❌ Compilation failed!"
             exit 1
           fi
-      
+
       - name: Upload License.class
         uses: actions/upload-artifact@v4
         with:
-          name: license-class-paper-1.21
+          name: License-class-1.21
           path: me/gerhart/antivpn/license/License.class
           retention-days: 90
