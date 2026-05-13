@@ -1,4 +1,4 @@
-name: Build License Class
+name: Build Anti-VPN (Patched)
 
 on:
   workflow_dispatch:
@@ -6,33 +6,24 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '8'
-
-      - name: Download Paper API (working link)
+          java-version: '21'
+      
+      - name: Patch License.java
         run: |
-          # Dùng Paper API thay vì Spigot (link ổn định hơn)
-          wget -O paper-api.jar "https://repo.papermc.io/repository/maven-public/io/papermc/paper/paper-api/1.20.4-R0.1-SNAPSHOT/paper-api-1.20.4-R0.1-20240504.023416-88.jar"
+          # Tìm và sửa file License.java
+          find src -name "License.java" -exec sed -i 's/public boolean validateLicense(int var1_1) {.*}/public boolean validateLicense(int var1_1) { return true; }/g' {} \;
           
-          # Kiểm tra file đã tải thành công chưa
-          if [ -f paper-api.jar ]; then
-            echo "✓ Paper API downloaded successfully"
-            ls -la paper-api.jar
-          else
-            echo "❌ Failed to download Paper API"
-            exit 1
-          fi
-
-      - name: Create complete License.java
-        run: |
-          mkdir -p me/gerhart/antivpn/license
-          
-          cat > me/gerhart/antivpn/license/License.java << 'EOF'
+          # Hoặc dùng cách thủ công hơn
+          cat > src/main/java/me/gerhart/antivpn/license/License.java << 'EOF'
           package me.gerhart.antivpn.license;
           
           import org.bukkit.configuration.file.YamlConfiguration;
@@ -59,18 +50,17 @@ jobs:
                   this.logger = plugin.getLogger();
                   this.licenseFile = new File(plugin.getDataFolder(), "license.yml");
                   this.loadOrCreateLicenseFile(460417401);
-                  this.logger.info("§a[Cracked] License bypassed - Working 100%");
+                  this.logger.info("§a[License] Patched - License bypassed!");
               }
           
               public boolean validateLicense(int var1_1) {
-                  this.logger.info("§a[License] Validation: SUCCESS (bypassed)");
+                  // PATCHED: Always return true
+                  this.logger.info("§a[License] Validation bypassed!");
                   return true;
               }
           
               public void validateLicenseAsync(Runnable callback) {
-                  if (callback != null) {
-                      callback.run();
-                  }
+                  if (callback != null) callback.run();
               }
           
               private void loadOrCreateLicenseFile(int hash) {
@@ -81,11 +71,8 @@ jobs:
                       if (!this.licenseFile.exists()) {
                           this.licenseFile.createNewFile();
                           try (FileWriter writer = new FileWriter(this.licenseFile)) {
-                              writer.write("# Cracked license file\n");
-                              writer.write("license-key: CRACKED-0001\n");
-                              writer.write("license-keys:\n");
-                              writer.write("  - CRACKED-KEY-001\n");
-                              writer.write("  - CRACKED-KEY-002\n");
+                              writer.write("# Patched license file\n");
+                              writer.write("license-key: PATCHED-BYPASS\n");
                           }
                       }
                       this.licenseConfig = YamlConfiguration.loadConfiguration(this.licenseFile);
@@ -96,109 +83,44 @@ jobs:
           
               public void logLicenseSuccess(String a, String b, String c, String d, String e, String f, String g, int h) {
                   this.logger.info("§a=========================================");
-                  this.logger.info("§a[License] License: VALID (cracked)");
+                  this.logger.info("§a[License] Status: VALID (Patched)");
                   this.logger.info("§a[License] Plugin: " + b);
-                  this.logger.info("§a[License] Version: " + c);
                   this.logger.info("§a=========================================");
               }
           
               public void logLicenseError(String error, int code) {}
           
-              private String getFirstLocalKey(int n) {
-                  return "CRACKED-KEY-001";
-              }
+              private String getFirstLocalKey(int n) { return "PATCHED-KEY"; }
+              private String fetchPublicIP(int n) { return "127.0.0.1"; }
+              private String toAnsi(String text, int n) { return text; }
+              private String buildBar(int n) { return "========================================="; }
+              private boolean isFolia(int n) { return false; }
+              public static String tvbrokkrya(byte[] bytes, int n) { return new String(bytes, StandardCharsets.UTF_16BE); }
           
-              private String fetchPublicIP(int n) {
-                  return "127.0.0.1";
-              }
-          
-              private String toAnsi(String text, int n) {
-                  return text;
-              }
-          
-              private String buildBar(int n) {
-                  return "=========================================";
-              }
-          
-              private boolean isFolia(int n) {
-                  return false;
-              }
-          
-              public static String tvbrokkrya(byte[] bytes, int n) {
-                  return new String(bytes, StandardCharsets.UTF_16BE);
-              }
-          
-              // Tất cả static methods từ bản gốc
-              private static byte[] zwbrmkwprsuybzy() { return new byte[]{0, 0, 0, 24, 0, 0, 0, 0}; }
-              private static byte[] cntwvuvxftousdz() { return new byte[]{0, 0, 0, 3, 0, 0, 0, 24}; }
-              private static byte[] fuobzwzbzhmtlob() { return new byte[]{0, 0, 0, 10, 0, 0, 0, 27}; }
-              private static byte[] eqdjfyzzlzfoxcb() { return new byte[]{0, 0, 0, 44, 0, 0, 0, 37}; }
-              private static byte[] ztofcyqcdcobdid() { return new byte[]{0, 0, 0, 21, 0, 0, 0, 81}; }
-              private static byte[] gzdgeyahuqjtkss() { return new byte[]{0, 0, 0, 0, 0, 0, 2, 62}; }
-              private static byte[] rzqjfxyckerjbul() { return new byte[]{0, 0, 0, 48, 0, 0, 2, -71}; }
-              private static byte[] ypswfjdmpgkoity() { return new byte[]{0, 0, 0, 48, 0, 0, 1, 100}; }
-              private static byte[] bqezsffrrjxdhkr() { return new byte[]{0, 0, 0, 48, 0, 0, 2, 110}; }
-              private static byte[] syznnfgchhklhjo() { return new byte[]{0, 0, 0, 48, 0, 0, 2, -23}; }
-              private static byte[] wpllqtsyxjsthfp() { return new byte[]{0, 0, 0, 48, 0, 0, 1, -34}; }
-              private static byte[] foxbzebjbmscoqp() { return new byte[]{0, 0, 0, 48, 0, 0, 1, 51}; }
-              private static byte[] xtkilfypfeyxlzd() { return new byte[]{0, 0, 0, 48, 0, 0, 2, 62}; }
-              private static byte[] jvgwsqvyxaxnlfa() { return new byte[]{0, 0, 0, 48, 0, 0, 1, -45}; }
-              private static byte[] aloialriewdfphu() { return new byte[]{0, 0, 0, 48, 0, 0, 1, 3}; }
-              private static byte[] djdwgpkipewjgsq() { return new byte[]{0, 0, 0, 1, 0, 0, 1, 99}; }
-              private static byte[] iqixqhcbfugdech() { return new byte[]{0, 0, 0, 48, 0, 0, 1, -108}; }
-              private static byte[] ttaegaonpgftloz() { return new byte[]{0, 0, 0, 26, 0, 0, 1, -60}; }
-              private static byte[] zfqzchllhaebzcj() { return new byte[]{0, 0, 0, 0, 0, 0, 2, 14}; }
-              private static byte[] zzfxsootvwjsdnv() { return new byte[]{0, 0, 0, 48, 0, 0, 2, 14}; }
-              private static byte[] xnhwumiyatdathm() { return new byte[]{0, 0, 0, 27, 0, 0, 2, -98}; }
-              private static byte[] shcysvcutbioaea() { return new byte[]{0, 0, 0, 4, 0, 0, -49}; }
-              private static byte[] agtqxgtwyjihehg() { return new byte[]{0, 0, 0, 0, 0, 0, 3, 25}; }
-              private static byte[] bkjcutqenmugpac() { return new byte[]{0, 0, 0, 48, 0, 0, 3, 25}; }
-              private static byte[] hzlxbbkileujdfq() { return new byte[]{0, 0, 0, 0, 0, 0, 3, 104}; }
-              private static byte[] okylgyengvijmzf() { return new byte[]{0, 0, 0, 48, 0, 0, 3, 104}; }
-              private static byte[] brfenxlejuwbuhu() { return new byte[]{0, 0, 0, 48, 0, 0, 3, -14}; }
-              private static byte[] qgatuelsfrfnjge() { return new byte[]{0, 0, 0, 48, 0, 0, 4, 34}; }
-              private static byte[] jwlcxhrmwkdivwx() { return new byte[]{0, 0, 0, 48, 0, 0, 4, 82}; }
-              private static byte[] uygrtzmlahgnvff() { return new byte[]{0, 0, 0, 48, 0, 0, 5, 18}; }
-              private static byte[] nrlxiaxpwzcxlya() { return new byte[]{0, 0, 0, 48, 0, 0, 4, -126}; }
-              private static byte[] wnlzdlvqemwexqg() { return new byte[]{0, 0, 0, 48, 0, 0, 4, -78}; }
-              private static byte[] dtlhgbhwztyuqio() { return new byte[]{0, 0, 0, 48, 0, 0, 3, -62}; }
-              private static byte[] apvswnqcapvjuut() { return new byte[]{0, 0, 0, 48, 0, 0, 5, 66}; }
-              private static byte[] xbhrlwazgwfnsfm() { return new byte[]{0, 0, 0, 48, 0, 0, 4, -30}; }
-              private static byte[] lcjztwybhezwdhu() { return new byte[]{0, 0, 0, 1, 0, 0, 5, 114}; }
-              private static byte[] ltezrjvsibatavj() { return new byte[]{0, 0, 0, 8, 0, 0, 5, 115}; }
-              private static byte[] gqgfmxhcxckycgo() { return new byte[]{0, 0, 0, 8, 0, 0, 5, 123}; }
-              private static byte[] bbjlpvxwzdmdube() { return new byte[]{0, 0, 0, 14, 0, 0, 3, -104}; }
-              private static byte[] celpofmkqtoddpk() { return new byte[]{0, 0, 0, 28, 0, 0, 3, -90}; }
-              private static byte[] igjvtykmwcsircb() { return new byte[]{0, 0, 0, 31, 0, 0, 3, 73}; }
-              private static byte[] xeijdqwqgrjsxms() { return new byte[]{0, 0, 0, 0, 0, 0, 4, 82}; }
-              private static byte[] jclpllgsxkokzlg() { return new byte[]{0, 0, 0, 3, 0, 0, 6, 73}; }
-              private static byte[] nfdbmilgcyiqqjd() { return new byte[]{0, 0, 0, 49, 0, 0, 6, 99}; }
+              private static byte[] zwbrmkwprsuybzy() { return new byte[]{0,0,0,24}; }
+              private static byte[] cntwvuvxftousdz() { return new byte[]{0,0,0,3,0,0,0,24}; }
+              private static byte[] fuobzwzbzhmtlob() { return new byte[]{0,0,0,10,0,0,0,27}; }
+              private static byte[] eqdjfyzzlzfoxcb() { return new byte[]{0,0,0,44,0,0,0,37}; }
+              private static byte[] ztofcyqcdcobdid() { return new byte[]{0,0,0,21,0,0,0,81}; }
+              // ... thêm các static method khác nếu cần
           
               static {
                   nothing_to_see_here = new String[17];
                   for (int i = 0; i < 17; i++) nothing_to_see_here[i] = "";
-                  cjacybmoak = "FAKE_LICENSE_STRING";
+                  cjacybmoak = "PATCHED_STRING";
                   Random rand = new Random();
                   FkaqJipaBG = rand.nextInt();
               }
           
-              private static int eznkswutelizrsfy(int n, int n2) {
-                  return n ^ n2;
-              }
+              private static int eznkswutelizrsfy(int n, int n2) { return n ^ n2; }
           }
           EOF
-          
-          echo "✓ License.java created"
-
-      - name: Compile License.java with Paper API
-        run: |
-          javac -cp ".:paper-api.jar" me/gerhart/antivpn/license/License.java
-          echo "✓ Compilation successful"
-          ls -la me/gerhart/antivpn/license/License.class
-          
-      - name: Upload License.class
+      
+      - name: Build with Maven
+        run: mvn clean package
+      
+      - name: Upload patched JAR
         uses: actions/upload-artifact@v4
         with:
-          name: license-class
-          path: me/gerhart/antivpn/license/License.class
-          retention-days: 90
+          name: Anti-VPN-Patched
+          path: target/*.jar
