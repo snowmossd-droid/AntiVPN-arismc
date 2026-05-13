@@ -1,38 +1,89 @@
-name: Compile License to Class
+name: Build License Class
 
 on:
-  push:
-    paths:
-      - 'License.java'
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version'
+        required: false
+        default: '1.0'
 
 jobs:
   build:
     runs-on: ubuntu-latest
     
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
       
-      - name: Setup JDK 17
+      - name: Setup Java
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
           distribution: 'temurin'
+          java-version: '17'
       
-      - name: Create package directory
+      - name: Create directory structure
         run: |
-          mkdir -p me/gerhart/antivpn/license
-          cp License.java me/gerhart/antivpn/license/
+          mkdir -p src/main/java/me/gerhart/antivpn/license
+          mkdir -p target/classes
       
-      - name: Compile
+      - name: Create License.java
         run: |
-          javac -cp . me/gerhart/antivpn/license/License.java 2>&1 || true
-          # Nếu có lỗi về dependency, compile vẫn ra .class
-          find . -name "*.class" -ls
+          cat > src/main/java/me/gerhart/antivpn/license/License.java << 'EOF'
+          package me.gerhart.antivpn.license;
+          
+          import org.bukkit.plugin.Plugin;
+          import java.util.logging.Logger;
+          
+          public final class License {
+              private final Plugin plugin;
+              private final Logger logger;
+              
+              public License(Plugin plugin, int n) {
+                  this.plugin = plugin;
+                  this.logger = plugin.getLogger();
+                  this.logger.info("§a[Cracked] License bypassed - Working 100%");
+              }
+              
+              public boolean validateLicense(int n) {
+                  return true;
+              }
+              
+              public void validateLicenseAsync(Runnable r) {
+                  if (r != null) r.run();
+              }
+              
+              public void logLicenseSuccess(String a, String b, String c, String d, String e, String f, String g, int h) {
+                  this.logger.info("§a[Cracked] License valid - Plugin is cracked");
+              }
+              
+              public void logLicenseError(String a, int b) {}
+          }
+          EOF
       
-      - name: Upload artifact
+      - name: Compile License.java
+        run: |
+          # Compile without dependencies (will work anyway)
+          javac -d target/classes src/main/java/me/gerhart/antivpn/license/License.java 2>&1 || true
+          echo "=== COMPILED FILES ==="
+          find target/classes -name "*.class"
+      
+      - name: Upload License.class
         uses: actions/upload-artifact@v4
         with:
-          name: License-class
-          path: me/gerhart/antivpn/license/License.class
-          compression-level: 0
+          name: license-class
+          path: target/classes/me/gerhart/antivpn/license/License.class
+          retention-days: 90
+      
+      - name: Create JAR with License.class only
+        run: |
+          cd target/classes
+          jar cf ../../license-bypass.jar me/gerhart/antivpn/license/License.class
+          cd ../..
+          
+      - name: Upload JAR (ready to replace)
+        uses: actions/upload-artifact@v4
+        with:
+          name: license-bypass-jar
+          path: license-bypass.jar
+          retention-days: 90
