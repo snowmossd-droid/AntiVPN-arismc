@@ -1,15 +1,11 @@
 package me.gerhart.antivpn.license;
 
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.Plugin;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 import java.util.logging.Logger;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.Plugin;
 
 public final class License {
     private final Plugin plugin;
@@ -21,27 +17,22 @@ public final class License {
     private static String cjacybmoak;
     private static String[] nothing_to_see_here;
 
+    // Constructor - phải đúng chữ ký (Plugin, int)
     public License(Plugin plugin, int n) {
         this.plugin = plugin;
         this.logger = plugin.getLogger();
         this.licenseFile = new File(plugin.getDataFolder(), "license.yml");
         this.loadOrCreateLicenseFile(460417401);
-        this.logger.info("§a=========================================");
-        this.logger.info("§a[License] §fCracked version - License bypassed");
-        this.logger.info("§a[License] §fEverything will work normally");
-        this.logger.info("§a=========================================");
+        this.logger.info("§a[License] Cracked version loaded");
     }
 
-    // ============ METHOD CHÍNH - LUÔN TRUE ============
+    // Method chính - luôn return true
     public boolean validateLicense(int var1_1) {
-        // LUÔN TRẢ VỀ TRUE - KHÔNG CẦN KIỂM TRA GÌ CẢ
-        this.logger.info("§a[License] Validation: §aSUCCESS (bypassed)");
+        this.logger.info("§a[License] Validation bypassed - returning true");
         return true;
     }
-    // =================================================
 
     public void validateLicenseAsync(Runnable callback) {
-        this.logger.info("§a[License] Async validation: SUCCESS (bypassed)");
         if (callback != null) {
             callback.run();
         }
@@ -52,88 +43,40 @@ public final class License {
             if (!this.plugin.getDataFolder().exists()) {
                 this.plugin.getDataFolder().mkdirs();
             }
-            
             if (!this.licenseFile.exists()) {
                 this.licenseFile.createNewFile();
                 try (FileWriter writer = new FileWriter(this.licenseFile)) {
-                    writer.write("# Cracked license file - Auto generated\n");
-                    writer.write("license-key: CRACKED-BYPASS-100\n");
-                    writer.write("license-keys:\n");
-                    writer.write("  - CRACKED-KEY-001\n");
-                    writer.write("  - CRACKED-KEY-002\n");
-                    writer.write("  - CRACKED-KEY-003\n");
-                    writer.write("license-status: VALID\n");
-                    writer.write("license-type: PREMIUM\n");
-                    writer.write("expiry-date: NEVER\n");
+                    writer.write("# Cracked license file\n");
+                    writer.write("license-key: CRACKED-0001\n");
                 }
             }
-            
             this.licenseConfig = YamlConfiguration.loadConfiguration(this.licenseFile);
-            
-            // Đảm bảo có dữ liệu license
-            if (!this.licenseConfig.contains("license-key")) {
-                this.licenseConfig.set("license-key", "CRACKED-BYPASS-100");
-                this.licenseConfig.set("license-keys", List.of("CRACKED-KEY-001", "CRACKED-KEY-002"));
-                this.licenseConfig.set("license-status", "VALID");
-                this.licenseConfig.set("license-type", "PREMIUM");
-                this.licenseConfig.save(this.licenseFile);
-            }
         } catch (IOException e) {
-            this.logger.warning("[License] Could not create license file: " + e.getMessage());
+            this.logger.warning("Could not create license file: " + e.getMessage());
         }
     }
 
-    public void logLicenseSuccess(String licenseKey, String pluginName, String currentVersion, 
-                                   String newestVersion, String downloadLink, String var6, String var7, int var8) {
+    public void logLicenseSuccess(String a, String b, String c, String d, String e, String f, String g, int h) {
         this.logger.info("§a=========================================");
-        this.logger.info("§a[License] §fLicense Status: §aVALID");
-        this.logger.info("§a[License] §fPlugin: §e" + pluginName);
-        this.logger.info("§a[License] §fCurrent Version: §e" + currentVersion);
-        this.logger.info("§a[License] §fLicense Key: §e" + licenseKey);
+        this.logger.info("§a[License] License: VALID (cracked)");
+        this.logger.info("§a[License] Plugin: " + b);
         this.logger.info("§a=========================================");
     }
 
     public void logLicenseError(String error, int code) {
-        // Không log lỗi - im lặng để tránh spam
-        // Có thể bỏ comment dòng dưới nếu muốn thấy log
-        // this.logger.info("§c[License] Error ignored: " + error);
+        // Bỏ qua lỗi
     }
 
     private String getFirstLocalKey(int n) {
-        if (this.licenseConfig != null) {
-            List<String> keys = this.licenseConfig.getStringList("license-keys");
-            if (keys != null && !keys.isEmpty()) {
-                String key = keys.get(0);
-                if (key != null && !key.trim().isEmpty()) {
-                    return key.trim();
-                }
-            }
-            
-            String singleKey = this.licenseConfig.getString("license-key");
-            if (singleKey != null && !singleKey.trim().isEmpty()) {
-                return singleKey.trim();
-            }
-        }
-        return "CRACKED-BYPASS-100";
+        return "CRACKED-KEY-001";
     }
 
     private String fetchPublicIP(int n) {
-        // Trả về IP giả
-        return "192.168.1.1";
+        return "127.0.0.1";
     }
 
     private String toAnsi(String text, int n) {
-        if (text == null) return "";
-        // Chuyển đổi màu Minecraft sang ANSI màu
-        return text.replace("&a", "\u001B[32m")
-                   .replace("&c", "\u001B[31m")
-                   .replace("&e", "\u001B[33m")
-                   .replace("&f", "\u001B[37m")
-                   .replace("&r", "\u001B[0m")
-                   .replace("&l", "")
-                   .replace("&n", "")
-                   .replace("&o", "")
-                   .replace("&k", "");
+        return text;
     }
 
     private String buildBar(int n) {
@@ -141,73 +84,65 @@ public final class License {
     }
 
     private boolean isFolia(int n) {
-        try {
-            Class.forName("io.papermc.paper.threadedregions.RegionizedServer");
-            return true;
-        } catch (ClassNotFoundException e) {
-            return false;
-        }
+        return false;
     }
 
     public static String tvbrokkrya(byte[] bytes, int n) {
-        if (bytes == null) return "";
-        return new String(bytes, StandardCharsets.UTF_16BE);
+        return new String(bytes);
     }
 
-    // Các static method trả về byte array giữ nguyên format
-    private static byte[] zwbrmkwprsuybzy() { return new byte[]{0, 0, 0, 24}; }
-    private static byte[] cntwvuvxftousdz() { return new byte[]{0, 0, 0, 3, 0, 0, 0, 24}; }
-    private static byte[] fuobzwzbzhmtlob() { return new byte[]{0, 0, 0, 10}; }
-    private static byte[] eqdjfyzzlzfoxcb() { return new byte[]{0, 0, 0, 44}; }
-    private static byte[] ztofcyqcdcobdid() { return new byte[]{0, 0, 0, 21}; }
-    private static byte[] gzdgeyahuqjtkss() { return new byte[]{0, 0, 0, 0}; }
-    private static byte[] rzqjfxyckerjbul() { return new byte[]{0, 0, 0, 48}; }
-    private static byte[] ypswfjdmpgkoity() { return new byte[]{0, 0, 0, 48}; }
-    private static byte[] bqezsffrrjxdhkr() { return new byte[]{0, 0, 0, 48}; }
-    private static byte[] syznnfgchhklhjo() { return new byte[]{0, 0, 0, 48}; }
-    private static byte[] wpllqtsyxjsthfp() { return new byte[]{0, 0, 0, 48}; }
-    private static byte[] foxbzebjbmscoqp() { return new byte[]{0, 0, 0, 48}; }
-    private static byte[] xtkilfypfeyxlzd() { return new byte[]{0, 0, 0, 48}; }
-    private static byte[] jvgwsqvyxaxnlfa() { return new byte[]{0, 0, 0, 48}; }
-    private static byte[] zzfxsootvwjsdnv() { return new byte[]{0, 0, 0, 48}; }
-    private static byte[] aloialriewdfphu() { return new byte[]{0, 0, 0, 48}; }
-    private static byte[] iqixqhcbfugdech() { return new byte[]{0, 0, 0, 48}; }
-    private static byte[] djdwgpkipewjgsq() { return new byte[]{0, 0, 0, 1}; }
-    private static byte[] xnhwumiyatdathm() { return new byte[]{0, 0, 0, 27}; }
-    private static byte[] shcysvcutbioaea() { return new byte[]{0, 0, 0, 4}; }
-    private static byte[] agtqxgtwyjihehg() { return new byte[]{0, 0, 0, 0}; }
-    private static byte[] ttaegaonpgftloz() { return new byte[]{0, 0, 0, 26}; }
-    private static byte[] zfqzchllhaebzcj() { return new byte[]{0, 0, 0, 0}; }
-    private static byte[] hzlxbbkileujdfq() { return new byte[]{0, 0, 0, 0}; }
-    private static byte[] bkjcutqenmugpac() { return new byte[]{0, 0, 0, 48}; }
-    private static byte[] brfenxlejuwbuhu() { return new byte[]{0, 0, 0, 48}; }
-    private static byte[] okylgyengvijmzf() { return new byte[]{0, 0, 0, 48}; }
-    private static byte[] qgatuelsfrfnjge() { return new byte[]{0, 0, 0, 48}; }
-    private static byte[] jwlcxhrmwkdivwx() { return new byte[]{0, 0, 0, 48}; }
-    private static byte[] uygrtzmlahgnvff() { return new byte[]{0, 0, 0, 48}; }
-    private static byte[] nrlxiaxpwzcxlya() { return new byte[]{0, 0, 0, 48}; }
-    private static byte[] wnlzdlvqemwexqg() { return new byte[]{0, 0, 0, 48}; }
-    private static byte[] dtlhgbhwztyuqio() { return new byte[]{0, 0, 0, 48}; }
-    private static byte[] apvswnqcapvjuut() { return new byte[]{0, 0, 0, 48}; }
-    private static byte[] xbhrlwazgwfnsfm() { return new byte[]{0, 0, 0, 48}; }
-    private static byte[] lcjztwybhezwdhu() { return new byte[]{0, 0, 0, 1}; }
-    private static byte[] ltezrjvsibatavj() { return new byte[]{0, 0, 0, 8}; }
-    private static byte[] gqgfmxhcxckycgo() { return new byte[]{0, 0, 0, 8}; }
-    private static byte[] jclpllgsxkokzlg() { return new byte[]{0, 0, 0, 3}; }
-    private static byte[] nfdbmilgcyiqqjd() { return new byte[]{0, 0, 0, 49}; }
-    private static byte[] bbjlpvxwzdmdube() { return new byte[]{0, 0, 0, 14}; }
-    private static byte[] celpofmkqtoddpk() { return new byte[]{0, 0, 0, 28}; }
-    private static byte[] igjvtykmwcsircb() { return new byte[]{0, 0, 0, 31}; }
-    private static byte[] xeijdqwqgrjsxms() { return new byte[]{0, 0, 0, 0}; }
+    // Các static method giữ nguyên format
+    private static byte[] zwbrmkwprsuybzy() { return new byte[]{0,0,0,24}; }
+    private static byte[] cntwvuvxftousdz() { return new byte[]{0,0,0,3,0,0,0,24}; }
+    private static byte[] fuobzwzbzhmtlob() { return new byte[]{0,0,0,10,0,0,0,27}; }
+    private static byte[] eqdjfyzzlzfoxcb() { return new byte[]{0,0,0,44,0,0,0,37}; }
+    private static byte[] ztofcyqcdcobdid() { return new byte[]{0,0,0,21,0,0,0,81}; }
+    private static byte[] gzdgeyahuqjtkss() { return new byte[]{0,0,0,0,0,0,2,62}; }
+    private static byte[] rzqjfxyckerjbul() { return new byte[]{0,0,0,48,0,0,2,-71}; }
+    private static byte[] ypswfjdmpgkoity() { return new byte[]{0,0,0,48,0,0,1,100}; }
+    private static byte[] bqezsffrrjxdhkr() { return new byte[]{0,0,0,48,0,0,2,110}; }
+    private static byte[] syznnfgchhklhjo() { return new byte[]{0,0,0,48,0,0,2,-23}; }
+    private static byte[] wpllqtsyxjsthfp() { return new byte[]{0,0,0,48,0,0,1,-34}; }
+    private static byte[] foxbzebjbmscoqp() { return new byte[]{0,0,0,48,0,0,1,51}; }
+    private static byte[] xtkilfypfeyxlzd() { return new byte[]{0,0,0,48,0,0,1,-108}; }
+    private static byte[] jvgwsqvyxaxnlfa() { return new byte[]{0,0,0,48,0,0,1,-45}; }
+    private static byte[] zzfxsootvwjsdnv() { return new byte[]{0,0,0,48,0,0,2,14}; }
+    private static byte[] aloialriewdfphu() { return new byte[]{0,0,0,48,0,0,1,3}; }
+    private static byte[] iqixqhcbfugdech() { return new byte[]{0,0,0,48,0,0,1,-108}; }
+    private static byte[] djdwgpkipewjgsq() { return new byte[]{0,0,0,1,0,0,1,99}; }
+    private static byte[] xnhwumiyatdathm() { return new byte[]{0,0,0,27,0,0,2,-98}; }
+    private static byte[] shcysvcutbioaea() { return new byte[]{0,0,0,4,0,0,-49}; }
+    private static byte[] agtqxgtwyjihehg() { return new byte[]{0,0,0,0,0,0,3,25}; }
+    private static byte[] ttaegaonpgftloz() { return new byte[]{0,0,0,26,0,0,1,-60}; }
+    private static byte[] zfqzchllhaebzcj() { return new byte[]{0,0,0,0,0,0,2,14}; }
+    private static byte[] hzlxbbkileujdfq() { return new byte[]{0,0,0,0,0,0,3,104}; }
+    private static byte[] bkjcutqenmugpac() { return new byte[]{0,0,0,48,0,0,3,25}; }
+    private static byte[] brfenxlejuwbuhu() { return new byte[]{0,0,0,48,0,0,3,-14}; }
+    private static byte[] okylgyengvijmzf() { return new byte[]{0,0,0,48,0,0,3,104}; }
+    private static byte[] qgatuelsfrfnjge() { return new byte[]{0,0,0,48,0,0,4,34}; }
+    private static byte[] jwlcxhrmwkdivwx() { return new byte[]{0,0,0,48,0,0,4,82}; }
+    private static byte[] uygrtzmlahgnvff() { return new byte[]{0,0,0,48,0,0,5,18}; }
+    private static byte[] nrlxiaxpwzcxlya() { return new byte[]{0,0,0,48,0,0,4,-126}; }
+    private static byte[] wnlzdlvqemwexqg() { return new byte[]{0,0,0,48,0,0,4,-78}; }
+    private static byte[] dtlhgbhwztyuqio() { return new byte[]{0,0,0,48,0,0,3,-62}; }
+    private static byte[] apvswnqcapvjuut() { return new byte[]{0,0,0,48,0,0,5,66}; }
+    private static byte[] xbhrlwazgwfnsfm() { return new byte[]{0,0,0,48,0,0,4,-30}; }
+    private static byte[] lcjztwybhezwdhu() { return new byte[]{0,0,0,1,0,0,5,114}; }
+    private static byte[] ltezrjvsibatavj() { return new byte[]{0,0,0,8,0,0,5,115}; }
+    private static byte[] gqgfmxhcxckycgo() { return new byte[]{0,0,0,8,0,0,5,123}; }
+    private static byte[] jclpllgsxkokzlg() { return new byte[]{0,0,0,3,0,0,6,73}; }
+    private static byte[] nfdbmilgcyiqqjd() { return new byte[]{0,0,0,49,0,0,6,99}; }
+    private static byte[] bbjlpvxwzdmdube() { return new byte[]{0,0,0,14,0,0,3,-104}; }
+    private static byte[] celpofmkqtoddpk() { return new byte[]{0,0,0,28,0,0,3,-90}; }
+    private static byte[] igjvtykmwcsircb() { return new byte[]{0,0,0,31,0,0,3,73}; }
+    private static byte[] xeijdqwqgrjsxms() { return new byte[]{0,0,0,0,0,0,4,82}; }
 
     static {
         nothing_to_see_here = new String[17];
         for (int i = 0; i < 17; i++) {
-            nothing_to_see_here[i] = "FAKE_STRING_" + i;
+            nothing_to_see_here[i] = "";
         }
-        cjacybmoak = "CRACKED_LICENSE_BYPASS";
-        Random rand = new Random();
-        FkaqJipaBG = rand.nextInt(1000000);
+        cjacybmoak = "FAKE_STRING";
     }
 
     private static int eznkswutelizrsfy(int n, int n2) {
