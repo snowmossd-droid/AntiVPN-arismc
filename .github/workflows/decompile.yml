@@ -8,37 +8,100 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
       
-      - name: Download Bukkit/Spigot API
+      - name: Create License.java (no dependencies)
         run: |
-          # Tải Paper API (thay thế cho Spigot)
-          wget -O paper-api.jar https://api.papermc.io/v2/projects/paper/versions/1.20.4/builds/418/downloads/paper-1.20.4-418-api.jar
-          # Hoặc dùng Spigot API
-          wget -O spigot-api.jar https://hub.spigotmc.org/nexus/content/repositories/snapshots/org/spigotmc/spigot-api/1.20.4-R0.1-SNAPSHOT/spigot-api-1.20.4-R0.1-20231115.030351-43.jar || true
-      
-      - name: Create directory and compile
-        run: |
-          # Tạo đúng cấu trúc package
           mkdir -p me/gerhart/antivpn/license
-          cp License.java me/gerhart/antivpn/license/
           
-          # Compile với classpath
-          javac -cp ".:paper-api.jar:spigot-api.jar" me/gerhart/antivpn/license/License.java 2>&1 || true
+          cat > me/gerhart/antivpn/license/License.java << 'EOF'
+          package me.gerhart.antivpn.license;
           
-          # Kiểm tra file đã được tạo chưa
-          find . -name "*.class" -ls
+          public final class License {
+              private Object plugin;
+              private Object logger;
+              
+              public License(Object plugin, int n) {
+                  this.plugin = plugin;
+                  try {
+                      java.lang.reflect.Method getLogger = plugin.getClass().getMethod("getLogger");
+                      this.logger = getLogger.invoke(plugin);
+                      java.lang.reflect.Method info = this.logger.getClass().getMethod("info", String.class);
+                      info.invoke(this.logger, "§a=========================================");
+                      info.invoke(this.logger, "§a[Cracked] License bypassed - Working 100%");
+                      info.invoke(this.logger, "§a=========================================");
+                  } catch (Exception e) {}
+              }
+              
+              public boolean validateLicense(int n) {
+                  try {
+                      if (this.logger != null) {
+                          java.lang.reflect.Method info = this.logger.getClass().getMethod("info", String.class);
+                          info.invoke(this.logger, "§a[License] Validation: §aSUCCESS (bypassed)");
+                      }
+                  } catch (Exception e) {}
+                  return true;
+              }
+              
+              public void validateLicenseAsync(Runnable r) {
+                  if (r != null) r.run();
+              }
+              
+              public void logLicenseSuccess(String a, String b, String c, String d, String e, String f, String g, int h) {
+                  try {
+                      if (this.logger != null) {
+                          java.lang.reflect.Method info = this.logger.getClass().getMethod("info", String.class);
+                          info.invoke(this.logger, "§a=========================================");
+                          info.invoke(this.logger, "§a[License] §fLicense: §aVALID");
+                          info.invoke(this.logger, "§a[License] §fPlugin: §e" + b);
+                          info.invoke(this.logger, "§a[License] §fVersion: §e" + c);
+                          info.invoke(this.logger, "§a=========================================");
+                      }
+                  } catch (Exception ex) {}
+              }
+              
+              public void logLicenseError(String a, int b) {}
+              
+              private void loadOrCreateLicenseFile(int hash) {}
+              private String getFirstLocalKey(int n) { return "CRACKED-KEY-001"; }
+              private String fetchPublicIP(int n) { return "127.0.0.1"; }
+              private String toAnsi(String s, int n) { return s; }
+              private String buildBar(int n) { return "========================================="; }
+              private boolean isFolia(int n) { return false; }
+              public static String tvbrokkrya(byte[] b, int n) { return new String(b); }
+          }
+          EOF
+          
+          echo "=== License.java created ==="
+          cat me/gerhart/antivpn/license/License.java
+      
+      - name: Compile License.java
+        run: |
+          cd me/gerhart/antivpn/license
+          javac License.java
+          echo "=== Compilation success ==="
+          ls -la License.class
+          cd ../..
       
       - name: Upload License.class
         uses: actions/upload-artifact@v4
         with:
           name: license-class
           path: me/gerhart/antivpn/license/License.class
+          retention-days: 90
+      
+      - name: Create standalone JAR
+        run: |
+          jar cf license-bypass.jar me/gerhart/antivpn/license/License.class
+          ls -la license-bypass.jar
+      
+      - name: Upload JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: license-bypass-jar
+          path: license-bypass.jar
           retention-days: 90
