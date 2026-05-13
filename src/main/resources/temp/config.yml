@@ -1,0 +1,11 @@
+messages:
+  reload: "&aAnti-VPN has been reloaded!"
+  noPermission: "&cYou do not have permission to use this command!"
+  player-blocked-admin-notice: "&#bd3232%name% &ftried to join using a &#bd3232VPN, &fand has been &#bd3232blocked!"
+  toggle-on: "&aAdmin notify toggle has been enabled!"
+  toggle-off: "&cAdmin notify toggle has been disabled!"
+
+block-screen:
+  - ""
+  - "&#bd3232You have been blocked from joining this server, disable your VPN to join."
+  - ""

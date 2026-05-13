@@ -1,0 +1,15 @@
+name: Anti-VPN
+version: 3
+main: me.gerhart.antivpn.Main
+api-version: 1.21
+folia-supported: true
+author: Gerhart
+description: by GerhartStudios
+commands:
+  antivpn:
+    permission: antivpn.admin
+permissions:
+  antivpn.bypass:
+    default: false
+  antivpn.admin:
+    default: op
